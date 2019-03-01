@@ -75,8 +75,9 @@ for i in $(eval echo "{1..$SERVER_COUNT_MACHINE}"); do
 done
 
 # Retrieve info to join agent to cluster
-SERVER_IP=$($MULTIPASSCMD info k3s-server-$NAME-1 | grep IPv4 | awk '{ print $2 }')
-URL="https://$(echo $SERVER_IP | sed -e 's/[[:space:]]//g'):6443"
+SERVER_IP_RAW=$($MULTIPASSCMD info k3s-server-$NAME-1 | grep IPv4 | awk '{ print $2 }')
+SERVER_IP=$(echo $SERVER_IP_RAW | sed -e 's/[[:space:]]//g')
+URL="https://${SERVER_IP}:6443"
 $MULTIPASSCMD copy-files k3s-server-$NAME-1:/home/multipass/node-token $NAME-node-token
 NODE_TOKEN=$(cat $NAME-node-token)
 
