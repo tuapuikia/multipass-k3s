@@ -110,7 +110,7 @@ $MULTIPASSCMD copy-files k3s-server-$NAME-1:/tmp/k3s.yaml $NAME-kubeconfig-orig.
 sed "/^[[:space:]]*server:/ s_:.*_: \"https://$(echo $SERVER_IP | sed -e 's/[[:space:]]//g'):6443\"_" $NAME-kubeconfig-orig.yaml > $NAME-kubeconfig.yaml
 
 echo "k3s setup finished"
-$MULTIPASSCMD exec k3s-server-$NAME-1 -- k3s kubectl get nodes
+$MULTIPASSCMD exec k3s-server-$NAME-1 -- sudo k3s kubectl get nodes
 echo "You can now use the following command to connect to your cluster"
 echo "$MULTIPASSCMD exec k3s-server-${NAME}-1 -- k3s kubectl get nodes"
 echo "Or use kubectl directly"
