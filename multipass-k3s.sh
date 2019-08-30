@@ -8,13 +8,13 @@ IMAGE="bionic"
 # How many machines to create
 SERVER_COUNT_MACHINE="1"
 # How many machines to create
-AGENT_COUNT_MACHINE="1"
+AGENT_COUNT_MACHINE="3"
 # How many CPUs to allocate to each machine
 SERVER_CPU_MACHINE="1"
 AGENT_CPU_MACHINE="1"
 # How much disk space to allocate to each machine
-SERVER_DISK_MACHINE="3G"
-AGENT_DISK_MACHINE="3G"
+SERVER_DISK_MACHINE="5G"
+AGENT_DISK_MACHINE="15G"
 # How much memory to allocate to each machine
 SERVER_MEMORY_MACHINE="1024M"
 AGENT_MEMORY_MACHINE="1024M"
@@ -71,6 +71,8 @@ for i in $(eval echo "{1..$SERVER_COUNT_MACHINE}"); do
     echo "Checking for Node being Ready on k3s-server-${NAME}-${i}"
     $MULTIPASSCMD exec k3s-server-$NAME-$i -- /bin/bash -c 'while [[ $(sudo k3s kubectl get nodes --no-headers 2>/dev/null | grep -c -v "NotReady") -eq 0 ]]; do sleep 2; done'
     echo "Node is Ready on k3s-server-${NAME}-${i}"
+    echo "Creating local path storage on k3s-server-${NAME}-${i}"
+    $MULTIPASSCMD exec k3s-server-$NAME-$i -- /bin/bash -c 'sudo mkdir -p /opt/local-path-provisioner'
 done
 
 # Retrieve info to join agent to cluster
@@ -103,6 +105,8 @@ for i in $(eval echo "{1..$AGENT_COUNT_MACHINE}"); do
     echo "Checking for Node k3s-agent-$NAME-$i being Ready"
     $MULTIPASSCMD exec k3s-server-$NAME-1 -- bash -c "until sudo k3s kubectl get nodes --no-headers | grep k3s-agent-$NAME-1 | grep -c -v NotReady >/dev/null; do sleep 2; done" 
     echo "Node k3s-agent-$NAME-$i is Ready on k3s-server-${NAME}-1"
+    echo "Creating local path storage on k3s-agent-${NAME}-${i}"
+    $MULTIPASSCMD exec k3s-agent-$NAME-$i -- /bin/bash -c 'sudo mkdir -p /opt/local-path-provisioner'
 done
 
 $MULTIPASSCMD exec k3s-server-$NAME-1 -- bash -c "sudo cp /etc/rancher/k3s/k3s.yaml /tmp/k3s.yaml && sudo chmod 664 /tmp/k3s.yaml"
