@@ -111,7 +111,10 @@ done
 
 $MULTIPASSCMD exec k3s-server-$NAME-1 -- bash -c "sudo cp /etc/rancher/k3s/k3s.yaml /tmp/k3s.yaml && sudo chmod 664 /tmp/k3s.yaml"
 $MULTIPASSCMD copy-files k3s-server-$NAME-1:/tmp/k3s.yaml $NAME-kubeconfig-orig.yaml
+echo "Patching the original kubeconfig from k3s"
 sed "/^[[:space:]]*server:/ s_:.*_: \"https://$(echo $SERVER_IP | sed -e 's/[[:space:]]//g'):6443\"_" $NAME-kubeconfig-orig.yaml > $NAME-kubeconfig.yaml
+echo "Remove the old $NAME-kubeconfig-orig.yaml"
+rm -rfv $NAME-kubeconfig-orig.yaml
 
 echo "k3s setup finished"
 $MULTIPASSCMD exec k3s-server-$NAME-1 -- sudo k3s kubectl get nodes
