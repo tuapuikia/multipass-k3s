@@ -2,7 +2,7 @@
 
 # Configure your settings
 # Name for the cluster/configuration files
-NAME=""
+NAME=$1
 # Ubuntu image to use (xenial/bionic)
 IMAGE="bionic"
 # How many machines to create
