@@ -8,7 +8,8 @@ IMAGE="bionic"
 # How many machines to create
 SERVER_COUNT_MACHINE="1"
 # How many machines to create
-AGENT_COUNT_MACHINE="3"
+AGENT_MACHINES=$2
+AGENT_COUNT_MACHINE=$AGENT_MACHINES
 # How many CPUs to allocate to each machine
 SERVER_CPU_MACHINE="1"
 AGENT_CPU_MACHINE="1"
@@ -42,6 +43,13 @@ fi
 if [ -z $NAME ]; then
     NAME=$(cat /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | fold -w 6 | head -n 1 | tr '[:upper:]' '[:lower:]')
     echo "No name given, generated name: ${NAME}"
+fi
+
+# Check how many worker node to create
+if [ -z $AGENT_COUNT_MACHINE ]; then
+    AGENT_COUNT_MACHINE=2
+  else
+    AGENT_COUNT_MACHINE=$AGENT_MACHINES
 fi
 
 echo "Creating cluster ${NAME} with ${SERVER_COUNT_MACHINE} servers and ${AGENT_COUNT_MACHINE} agents"
